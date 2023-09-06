@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/COS420/static/css/main.39f589df.css",
+    "main.js": "/COS420/static/js/main.04ad5b0d.js",
+    "static/js/787.4ef7427d.chunk.js": "/COS420/static/js/787.4ef7427d.chunk.js",
+    "index.html": "/COS420/index.html",
+    "main.39f589df.css.map": "/COS420/static/css/main.39f589df.css.map",
+    "main.04ad5b0d.js.map": "/COS420/static/js/main.04ad5b0d.js.map",
+    "787.4ef7427d.chunk.js.map": "/COS420/static/js/787.4ef7427d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.39f589df.css",
+    "static/js/main.04ad5b0d.js"
+  ]
+}
