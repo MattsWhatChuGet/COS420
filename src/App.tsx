@@ -5,7 +5,7 @@ import { Button } from "react-bootstrap";
 function App(): JSX.Element {
     return (
         <div className="App">
-            <header style={ { background:"plum" }} className="App-header">
+            <header style={{ background: "plum" }} className="App-header">
                 Matthew Patterson
             </header>
             <img src="Images/MyCloseUp.jpg" alt="My Close Up."/>
