@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.css";
-import {Button, Col, Container, Row} from "react-bootstrap";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import myCloseUp from "./Images/MyCloseUp.jpg";
 
 function App(): JSX.Element {
@@ -20,21 +20,18 @@ function App(): JSX.Element {
             <Button onClick={() => console.log("Hello World!")}>
                 Log Hello World
             </Button>
-            <ul>
-                <li>Family Time</li>
-                <li>Board/Video Games</li>
-                <li>Listening to music</li>
-                <li>Philosophy</li>
-                <li>Playing Guitar/Drums/Piano</li>
-            </ul>
+
             <Container>
                 <Row>
-                    <Col>Test</Col>
+                    <Col style={{ backgroundColor: "red" }}></Col>
                     <Col>
-                        1
-                        2
-                        3
-                        4
+                        <ul>
+                            <li>Family Time</li>
+                            <li>Board/Video Games</li>
+                            <li>Listening to music</li>
+                            <li>Philosophy</li>
+                            <li>Playing Guitar/Drums/Piano</li>
+                        </ul>
                     </Col>
                 </Row>
             </Container>
