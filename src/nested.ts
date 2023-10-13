@@ -2,7 +2,7 @@ import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
 import {queries} from "@testing-library/react";
 
-/**
+/** #1 (DONE)
  * Consumes an array of questions and returns a new array with only the questions
  * that are `published`.
  */
@@ -12,22 +12,28 @@ export function getPublishedQuestions(questions: Question[]): Question[] {
     );
 }
 
-/**
+/** #2
  * Consumes an array of questions and returns a new array of only the questions that are
  * considered "non-empty". An empty question has an empty string for its `body` and
  * `expected`, and an empty array for its `options`.
  */
 export function getNonEmptyQuestions(questions: Question[]): Question[] {
 
-    return [...questions].filter(
+    var deepCopy = questions.map((questions : Question) : Question =>
+        ({
+            ...questions,
+            options: [...questions.options]
+        })
+    );
+    return deepCopy.filter(
         (questions : Question) : boolean =>
-            questions.body.length > 0
-            && questions.expected.length > 0
-            && questions.options.length > 0
+            questions.body != ""
+            && questions.expected != ""
+            && questions.type == "short_answer_question" || (questions.type == "multiple_choice_question" && questions.options.length > 0)
     );
 }
 
-/***
+/*** #3 (DONE)
  * Consumes an array of questions and returns the question with the given `id`. If the
  * question is not found, return `null` instead.
  */
@@ -37,37 +43,45 @@ export function findQuestion(questions: Question[], id: number): Question | unde
     );
 }
 
-/**
+/** #4
  * Consumes an array of questions and returns a new array that does not contain the question
  * with the given `id`.
  */
 export function removeQuestion(questions: Question[], id: number): Question[] {
-    return [];
+    return [...questions].filter(
+        (questions : Question) : boolean => questions.id === id
+    );
 }
 
-/***
+/*** #5 (DONE)
  * Consumes an array of questions and returns a new array containing just the names of the
  * questions, as an array.
  */
 export function getNames(questions: Question[]): string[] {
-    return [];
+    return [...questions].map(
+        (questions : Question) : string => questions.name
+    );
 }
 
-/***
+/*** #6 (DONE)
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return 0;
+    return [...questions].reduce(
+        (curSum: number, questions : Question) => curSum + questions.points
+    , 0);
 }
 
-/***
+/*** #7
  * Consumes an array of questions and returns the sum total of the PUBLISHED questions.
  */
 export function sumPublishedPoints(questions: Question[]): number {
-    return 0;
+    return [...questions].reduce(
+        (curSum : number, questions : Question) => questions.published ? curSum + 1 : curSum + 0
+        , 0);
 }
 
-/***
+/*** #8
  * Consumes an array of questions, and produces a Comma-Separated Value (CSV) string representation.
  * A CSV is a type of file frequently used to share tabular data; we will use a single string
  * to represent the entire file. The first line of the file is the headers "id", "name", "options",
@@ -85,10 +99,15 @@ id,name,options,points,published
  * Check the unit tests for more examples!
  */
 export function toCSV(questions: Question[]): string {
-    return "";
+    var firstLine = 'id,name,options,points,published\n';
+    var values = [...questions].map(
+        (questions : Question): string =>
+            `${questions.id},${questions.name},${questions.options},${questions.points},${questions.published}`).join("\n"
+    );
+    return firstLine + values;
 }
 
-/**
+/** #9
  * Consumes an array of Questions and produces a corresponding array of
  * Answers. Each Question gets its own Answer, copying over the `id` as the `questionId`,
  * making the `text` an empty string, and using false for both `submitted` and `correct`.
@@ -97,15 +116,17 @@ export function makeAnswers(questions: Question[]): Answer[] {
     return [];
 }
 
-/***
+/*** #10 (DONE)
  * Consumes an array of Questions and produces a new array of questions, where
  * each question is now published, regardless of its previous published status.
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [];
+    return [...questions].map(
+        (questions : Question): Question => ({...questions, published: true})
+    );
 }
 
-/***
+/*** #11
  * Consumes an array of Questions and produces whether or not all the questions
  * are the same type. They can be any type, as long as they are all the SAME type.
  */
@@ -113,7 +134,7 @@ export function sameType(questions: Question[]): boolean {
     return false;
 }
 
-/***
+/*** #12
  * Consumes an array of Questions and produces a new array of the same Questions,
  * except that a blank question has been added onto the end. Reuse the `makeBlankQuestion`
  * you defined in the `objects.ts` file.
@@ -127,7 +148,7 @@ export function addNewQuestion(
     return [];
 }
 
-/***
+/*** #13
  * Consumes an array of Questions and produces a new array of Questions, where all
  * the Questions are the same EXCEPT for the one with the given `targetId`. That
  * Question should be the same EXCEPT that its name should now be `newName`.
@@ -140,7 +161,7 @@ export function renameQuestionById(
     return [];
 }
 
-/***
+/*** #14
  * Consumes an array of Questions and produces a new array of Questions, where all
  * the Questions are the same EXCEPT for the one with the given `targetId`. That
  * Question should be the same EXCEPT that its `type` should now be the `newQuestionType`
@@ -155,7 +176,7 @@ export function changeQuestionTypeById(
     return [];
 }
 
-/**
+/** #15
  * Consumes an array of Questions and produces a new array of Questions, where all
  * the Questions are the same EXCEPT for the one with the given `targetId`. That
  * Question should be the same EXCEPT that its `option` array should have a new element.
@@ -174,7 +195,7 @@ export function editOption(
     return [];
 }
 
-/***
+/*** #16
  * Consumes an array of questions, and produces a new array based on the original array.
  * The only difference is that the question with id `targetId` should now be duplicated, with
  * the duplicate inserted directly after the original question. Use the `duplicateQuestion`

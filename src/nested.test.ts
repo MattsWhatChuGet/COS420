@@ -207,16 +207,16 @@ describe("Testing the Question[] functions", () => {
         expect(findQuestion(BLANK_QUESTIONS, 1)).toEqual(BLANK_QUESTIONS[0]);
         expect(findQuestion(BLANK_QUESTIONS, 47)).toEqual(BLANK_QUESTIONS[1]);
         expect(findQuestion(BLANK_QUESTIONS, 2)).toEqual(BLANK_QUESTIONS[2]);
-        expect(findQuestion(BLANK_QUESTIONS, 3)).toEqual(null);
+        expect(findQuestion(BLANK_QUESTIONS, 3)).toEqual(undefined);
         expect(findQuestion(SIMPLE_QUESTIONS, 1)).toEqual(SIMPLE_QUESTIONS[0]);
         expect(findQuestion(SIMPLE_QUESTIONS, 2)).toEqual(SIMPLE_QUESTIONS[1]);
         expect(findQuestion(SIMPLE_QUESTIONS, 5)).toEqual(SIMPLE_QUESTIONS[2]);
         expect(findQuestion(SIMPLE_QUESTIONS, 9)).toEqual(SIMPLE_QUESTIONS[3]);
-        expect(findQuestion(SIMPLE_QUESTIONS, 6)).toEqual(null);
+        expect(findQuestion(SIMPLE_QUESTIONS, 6)).toEqual(undefined);
         expect(findQuestion(SIMPLE_QUESTIONS_2, 478)).toEqual(
             SIMPLE_QUESTIONS_2[0]
         );
-        expect(findQuestion([], 0)).toEqual(null);
+        expect(findQuestion([], 0)).toEqual(undefined);
     });
 
     test("Testing the removeQuestion", () => {
