@@ -8,7 +8,7 @@ import {queries} from "@testing-library/react";
  * that are `published`.
  */
 export function getPublishedQuestions(questions: Question[]): Question[] {
-    return [...questions].filter(
+    return questions.map((q:Question): Question => ({...q})).filter(
         (questions: Question) : boolean => questions.published
     );
 }
@@ -19,7 +19,7 @@ export function getPublishedQuestions(questions: Question[]): Question[] {
  * `expected`, and an empty array for its `options`.
  */
 export function getNonEmptyQuestions(questions: Question[]): Question[] {
-    return [...questions].filter(
+    return questions.map((q:Question): Question => ({...q})).filter(
         (q : Question) : boolean =>
             !(q.body == ""
               && q.expected == ""
@@ -32,7 +32,7 @@ export function getNonEmptyQuestions(questions: Question[]): Question[] {
  * question is not found, return `null` instead.
  */
 export function findQuestion(questions: Question[], id: number): Question | undefined {
-    return [...questions].find(
+    return questions.map((q:Question): Question => ({...q})).find(
         (questions : Question) : boolean => questions.id === id
     );
 }
@@ -42,7 +42,7 @@ export function findQuestion(questions: Question[], id: number): Question | unde
  * with the given `id`.
  */
 export function removeQuestion(questions: Question[], id: number): Question[] {
-    return [...questions].filter(
+    return questions.map((q:Question): Question => ({...q})).filter(
         (questions : Question) : boolean => questions.id != id
     );
 }
@@ -52,7 +52,7 @@ export function removeQuestion(questions: Question[], id: number): Question[] {
  * questions, as an array.
  */
 export function getNames(questions: Question[]): string[] {
-    return [...questions].map(
+    return questions.map((q:Question): Question => ({...q})).map(
         (questions : Question) : string => questions.name
     );
 }
@@ -61,7 +61,7 @@ export function getNames(questions: Question[]): string[] {
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return [...questions].reduce(
+    return questions.map((q:Question): Question => ({...q})).reduce(
         (curSum: number, questions : Question) => curSum + questions.points
     , 0);
 }
@@ -70,7 +70,7 @@ export function sumPoints(questions: Question[]): number {
  * Consumes an array of questions and returns the sum total of the PUBLISHED questions.
  */
 export function sumPublishedPoints(questions: Question[]): number {
-    return [...questions].reduce(
+    return questions.map((q:Question): Question => ({...q})).reduce(
         (curSum : number, questions : Question) => questions.published ? curSum + questions.points : curSum
     ,0);
 }
@@ -94,7 +94,7 @@ id,name,options,points,published
  */
 export function toCSV(questions: Question[]): string {
     var firstLine = 'id,name,options,points,published\n';
-    var values = [...questions].map(
+    var values = questions.map((q:Question): Question => ({...q})).map(
         (questions : Question): string =>
             `${questions.id},${questions.name},${questions.options.length},${questions.points},${questions.published}`).join("\n"
     );
@@ -107,7 +107,7 @@ export function toCSV(questions: Question[]): string {
  * making the `text` an empty string, and using false for both `submitted` and `correct`.
  */
 export function makeAnswers(questions: Question[]): Answer[] {
-    return questions.map(
+    return questions.map((q:Question): Question => ({...q})).map(
         (questions : Question): Answer => ({
             questionId: questions.id,
             text: "",
@@ -122,18 +122,19 @@ export function makeAnswers(questions: Question[]): Answer[] {
  * each question is now published, regardless of its previous published status.
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [...questions].map(
+    return questions.map((q:Question): Question => ({...q})).map(
         (questions : Question): Question => ({...questions, published: true})
     );
 }
 
-/*** #11
+/*** #11 (DONE)
  * Consumes an array of Questions and produces whether or not all the questions
  * are the same type. They can be any type, as long as they are all the SAME type.
  */
 export function sameType(questions: Question[]): boolean {
-
-    return false;
+    var hasShortAnswers : Question | undefined = [...questions].find((q : Question): boolean => q.type === "short_answer_question");
+    var hasMultiChoice : Question | undefined = [...questions].find((q : Question): boolean => q.type === "multiple_choice_question");
+    return !(hasMultiChoice && hasShortAnswers);
 }
 
 /*** #12 (DONE)
@@ -147,7 +148,8 @@ export function addNewQuestion(
     name: string,
     type: QuestionType
 ): Question[] {
-    return [...questions, makeBlankQuestion(id, name, type)];
+    var qCopy = questions.map((q:Question): Question => ({...q}));
+    return [...qCopy, makeBlankQuestion(id, name, type)];
 }
 
 /*** #13 (DONE)
@@ -160,7 +162,8 @@ export function renameQuestionById(
     targetId: number,
     newName: string
 ): Question[] {
-    return [...questions].map(
+    var qCopy = questions.map((q:Question): Question => ({...q}));
+    return qCopy.map(
         (questions : Question): Question => ({
             ...questions,
             name: questions.id === targetId ? newName : questions.name
@@ -180,7 +183,8 @@ export function changeQuestionTypeById(
     targetId: number,
     newQuestionType: QuestionType
 ): Question[] {
-    return [...questions].map(
+    var qCopy = questions.map((q:Question): Question => ({...q}));
+    return qCopy.map(
         (question : Question) : Question => ({
             ...question,
             type: question.id === targetId ? newQuestionType : question.type,
@@ -205,16 +209,40 @@ export function editOption(
     targetOptionIndex: number,
     newOption: string
 ): Question[] {
-    return [...questions].map(
-        (question : Question): Question =>({
-            ...question,
-            options: question.id === targetId ?
-                        (targetOptionIndex === -1 ? [...question.options, newOption]                // Add at end if -1
-                        : [...question.options].splice(targetOptionIndex, 1, newOption))  // Replace at index
-                    : [...question.options]                                                         // Do Nothing
-        })
-    );
+    // Make Deep Copy
+    var qCopy = questions.map((q:Question): Question => ({...q}));
+
+    // Search for valid target with ID.
+    var validTarget = qCopy.find((q: Question): boolean => q.id === targetId);
+
+    // Verify valid target
+    if (validTarget){
+        // Check if add to end
+        if(targetOptionIndex === -1){
+            // Redefine target question options array with new array copy + newOption
+            validTarget.options = [...validTarget.options, newOption];
+        }
+        // If not adding to end, replace on index
+        else {
+            return qCopy.map((q: Question): Question => ({
+                ...q,
+                options: spliceReplaceTarget(validTarget.options, targetOptionIndex, newOption)
+            }))
+        }
+    }
+    // For some reason, although validTarget is defined by the deep copy of the passed parameter,
+    // with `.splice` it manipulates the passed parameter.
+    // I have tried every way I can think of to disconnect this logic from the parameter - no luck.
+    return qCopy;
 }
+
+function spliceReplaceTarget(options :string[], targetIndex : number, newOption : string) : string[] {
+    var oCopy = [...options];
+    oCopy.splice(targetIndex, 1, newOption);
+    return oCopy;
+}
+
+
 
 /*** #16
  * Consumes an array of questions, and produces a new array based on the original array.
