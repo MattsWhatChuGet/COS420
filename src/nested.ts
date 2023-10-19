@@ -1,7 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
 import {makeBlankQuestion, duplicateQuestion} from "./objects";
-import {queries} from "@testing-library/react";
 
 /** #1 (DONE)
  * Consumes an array of questions and returns a new array with only the questions
@@ -210,24 +209,21 @@ export function editOption(
     newOption: string
 ): Question[] {
     // Make Deep Copy
-    var qCopy = questions.map((q:Question): Question => ({...q}));
+    var qCopy = deepCloneQuestions(questions);
 
-    // Search for valid target with ID.
-    var validTarget = qCopy.find((q: Question): boolean => q.id === targetId);
+    // Search for valid target with ID, return index.
+    var validTargetIndex = qCopy.findIndex((q: Question): boolean => q.id === targetId);
 
     // Verify valid target
-    if (validTarget){
+    if (validTargetIndex > -1){
         // Check if add to end
         if(targetOptionIndex === -1){
             // Redefine target question options array with new array copy + newOption
-            validTarget.options = [...validTarget.options, newOption];
+            qCopy[validTargetIndex].options = [...qCopy[validTargetIndex].options, newOption];
         }
         // If not adding to end, replace on index
         else {
-            return qCopy.map((q: Question): Question => ({
-                ...q,
-                options: spliceReplaceTarget(validTarget.options, targetOptionIndex, newOption)
-            }))
+            spliceReplaceTarget(qCopy, validTargetIndex, targetOptionIndex, newOption);
         }
     }
     // For some reason, although validTarget is defined by the deep copy of the passed parameter,
@@ -236,15 +232,21 @@ export function editOption(
     return qCopy;
 }
 
-function spliceReplaceTarget(options :string[], targetIndex : number, newOption : string) : string[] {
-    var oCopy = [...options];
-    oCopy.splice(targetIndex, 1, newOption);
-    return oCopy;
+function deepCloneQuestions(questions : Question[]) {
+    return questions.map((q: Question) : Question =>({
+        ...q,
+        options: [...q.options]
+        })
+    );
+}
+
+function spliceReplaceTarget(questions : Question [], validTargetIndex : number, targetIndex : number, newOption : string) {
+    questions[validTargetIndex].options.splice(targetIndex, 1, newOption);
 }
 
 
 
-/*** #16
+/*** #16 (DONE)
  * Consumes an array of questions, and produces a new array based on the original array.
  * The only difference is that the question with id `targetId` should now be duplicated, with
  * the duplicate inserted directly after the original question. Use the `duplicateQuestion`
