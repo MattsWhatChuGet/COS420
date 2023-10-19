@@ -255,7 +255,10 @@ export function duplicateQuestionInArray(
     targetId: number,
     newId: number
 ): Question[] {
-    var copyQ = [...questions];
-    var targetIndex = copyQ.findIndex((q : Question) => q.id === targetId);
-    return targetIndex > -1 ? copyQ.splice(targetIndex, 0, duplicateQuestion(newId, copyQ[targetIndex]) ) : [...questions];
+    var qCopy = questions.map((q:Question): Question => ({...q}));
+    var targetIndex = qCopy.findIndex((q : Question) => q.id === targetId);
+    if(targetIndex > -1){
+        qCopy.splice(targetIndex+1, 0, duplicateQuestion(newId, qCopy[targetIndex]) )
+    }
+    return qCopy;
 }
